@@ -1,0 +1,15 @@
+admin_user:
+  name: foo
+  password: foo-password
+feed_url: http://example.com/gitbucket/activities.atom
+root_url: http://example.com/gitbucket
+service_hooks:
+- url: https://hooks.slack.com/services/XXXXXXXXXXX
+  token: ''
+  ctype: json
+  events:
+    issue_comment: 'on'
+    issues: 'on'
+    pull_request: 'on'
+    pull_request_review_comment: 'on'
+    push: 'on'
