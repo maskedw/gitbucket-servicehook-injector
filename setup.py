@@ -20,8 +20,8 @@ setup(
     install_requires=[
         'requests',
         'feedparser',
-        'pathlib',
         'pyyaml',
+        'lxml',
         'beautifulsoup4',
     ]
 )

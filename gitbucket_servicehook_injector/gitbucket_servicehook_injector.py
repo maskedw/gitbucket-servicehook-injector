@@ -13,7 +13,6 @@ import requests
 import feedparser
 import re
 from pprint import pformat
-from pathlib import Path
 from bs4 import BeautifulSoup
 import yaml
 import logging
@@ -80,7 +79,6 @@ def _login(url, user, password):
 
 
 def _get_existing_service_hooks(session, url):
-    existing_service_hooks = []
     res = session.get(url)
     res.raise_for_status()
     soup = BeautifulSoup(res.text, 'lxml')
@@ -164,34 +162,35 @@ def main():
         logger.debug('created_repositories =\n{}'.format(
             pformat(created_repositories)))
 
-        if created_repositories:
-            session = _login(
-                urljoin(cfg['root_url'] + '/', 'signin'),
-                cfg['admin_user']['name'],
-                cfg['admin_user']['password'])
+        if not created_repositories:
+            return
 
-            for repo in created_repositories:
-                existing_service_hooks = _get_existing_service_hooks(
+        session = _login(
+            urljoin(cfg['root_url'] + '/', 'signin'),
+            cfg['admin_user']['name'],
+            cfg['admin_user']['password'])
+
+        for repo in created_repositories:
+            existing_service_hooks = _get_existing_service_hooks(
+                session,
+                urljoin(repo + '/', 'settings/hooks'))
+
+            logger.debug('"{}" existing_service_hooks =\n{}'.format(
+                repo,
+                pformat(existing_service_hooks)))
+
+            for hook in cfg['service_hooks']:
+                hook_url = hook['url']
+                if hook_url in existing_service_hooks:
+                    logger.debug('"{}" already exists'.format(hook_url))
+                    continue
+
+                _inject_service_hook(
                     session,
-                    urljoin(repo + '/', 'settings/hooks'))
-
-                logger.debug('"{}" existing_service_hooks =\n{}'.format(
-                    repo,
-                    pformat(existing_service_hooks)))
-
-
-                for hook in cfg['service_hooks']:
-                    hook_url = hook['url']
-                    if hook_url in existing_service_hooks:
-                        logger.debug('"{}" already exists'.format(hook_url))
-                        continue
-
-                    _inject_service_hook(
-                        session,
-                        urljoin(repo + '/', 'settings/hooks/new'),
-                        hook)
-                    logger.info('"{}" add service hook: "{}"'.format(
-                        repo, hook_url))
+                    urljoin(repo + '/', 'settings/hooks/new'),
+                    hook)
+                logger.info('"{}" add service hook: "{}"'.format(
+                    repo, hook_url))
     except Exception as e:
         logger.exception(e)
         sys.exit(1)
