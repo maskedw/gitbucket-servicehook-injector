@@ -136,6 +136,12 @@ def main():
         action='store_true',
         help='Prints a message at startup')
     argparser.add_argument(
+        '--dry-run',
+        required=False,
+        default=False,
+        action='store_true',
+        help="Perform a trial run with no changes made")
+    argparser.add_argument(
         '-v', '--verbose',
         required=False,
         default=False,
@@ -185,10 +191,11 @@ def main():
                     logger.debug('"{}" already exists'.format(hook_url))
                     continue
 
-                _inject_service_hook(
-                    session,
-                    urljoin(repo + '/', 'settings/hooks/new'),
-                    hook)
+                if not args.dry_run:
+                    _inject_service_hook(
+                        session,
+                        urljoin(repo + '/', 'settings/hooks/new'),
+                        hook)
                 logger.info('"{}" add service hook: "{}"'.format(
                     repo, hook_url))
     except Exception as e:
