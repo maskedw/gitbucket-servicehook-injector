@@ -16,7 +16,7 @@ setup(
         'console_scripts': [
             'gitbucket-servicehook-injector=gitbucket_servicehook_injector.gitbucket_servicehook_injector:main'],
     },
-    zip_safe=True,
+    zip_safe=False,
     install_requires=[
         'requests',
         'feedparser',
