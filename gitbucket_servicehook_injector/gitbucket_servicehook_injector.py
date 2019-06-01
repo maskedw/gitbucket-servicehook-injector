@@ -80,7 +80,7 @@ def _get_existing_service_hooks(session, url):
     rows = table.findAll('tr')
     existing_service_hooks = []
     for i, r in enumerate(rows):
-        selector = 'td:nth-child(1) > a > span'
+        selector = 'td:nth-of-type(1) > a > span'
         v = r.select(selector)[0]
         existing_service_hooks.append(v.get_text())
 
