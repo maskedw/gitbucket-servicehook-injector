@@ -8,8 +8,8 @@ service_hooks:
   token: ''
   ctype: json
   events:
-    issue_comment: 'on'
-    issues: 'on'
-    pull_request: 'on'
-    pull_request_review_comment: 'on'
-    push: 'on'
+    issue_comment: true
+    issues: true
+    pull_request: true
+    pull_request_review_comment: true
+    push: true
