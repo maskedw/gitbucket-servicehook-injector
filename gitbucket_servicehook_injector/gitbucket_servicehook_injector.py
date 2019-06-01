@@ -50,20 +50,12 @@ def _create_logger(logfile_path, verbose):
     return logger_
 
 
-def _get_created_repositories(feed_url):
-    created_repositories = []
+def _get_repositories(feed_url):
     feed = feedparser.parse(feed_url)
-    regex = re.compile(r'<a href=.*</a> (?P<activity>[a-zA-Z]+) <a href=.*</a>')
-    created_repositories = []
-    for entry in feed['entries'] :
-        content = entry['content'][0]
-        match = regex.match(content['value'])
-        if match:
-            activity = match.group('activity')
-            if activity == 'created':
-                created_repositories.append(entry['link'])
+    repositories = [x['link'] for x in feed['entries']]
+    repositories = list(set(repositories))
 
-    return created_repositories
+    return repositories
 
 
 def _login(url, user, password):
@@ -164,11 +156,11 @@ def main():
             cfg = yaml.safe_load(f)
         logger.debug('cfg =\n{}'.format(pformat(cfg)))
 
-        created_repositories = _get_created_repositories(cfg['feed_url'])
-        logger.debug('created_repositories =\n{}'.format(
-            pformat(created_repositories)))
+        repositories = _get_repositories(cfg['feed_url'])
+        logger.debug('repositories =\n{}'.format(
+            pformat(repositories)))
 
-        if not created_repositories:
+        if not repositories:
             return
 
         session = _login(
@@ -176,7 +168,7 @@ def main():
             cfg['admin_user']['name'],
             cfg['admin_user']['password'])
 
-        for repo in created_repositories:
+        for repo in repositories:
             existing_service_hooks = _get_existing_service_hooks(
                 session,
                 urljoin(repo + '/', 'settings/hooks'))
