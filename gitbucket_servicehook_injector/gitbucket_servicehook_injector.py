@@ -16,6 +16,7 @@ from pprint import pformat
 from bs4 import BeautifulSoup
 import yaml
 import logging
+import logging.handlers
 try:
     from urllib.parse import urljoin # py3
 except:
